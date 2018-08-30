@@ -1,25 +1,21 @@
 import React, { Component } from 'react';
 import styled from 'styled-components'
 import { array } from 'prop-types';
+import { map } from 'lodash/fp';
 
 const propTypes = {
   images: array.isRequired
 };
 
 const StyledContainer = styled.div`
-
+  overflow: hidden;
   position: relative;
   height: 100%;
   width: 100%;
 `;
 
 const StyledFullBgImage = styled.div`
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-
-  position: absolute;
+  display: inline-block;
   height: 100%;
   width: 100%;
   background-image: url(${props => props.src});
@@ -32,11 +28,14 @@ const StyledFullBgImage = styled.div`
   background-size: cover;
 `;
 
-class Hero extends Component {
+class Carousel extends Component {
   constructor(props) {
     super(props)
 
+    const { images } = this.props
+
     this.state = {
+      images: [ ...images, ...images ],
       currentIndex: 0,
       intervalId: -1
     }
@@ -68,14 +67,18 @@ class Hero extends Component {
     const { images } = this.props;
     const { currentIndex } = this.state;
 
+    const imageMapper = map(
+      image => <StyledFullBgImage key={image} src={image} />
+    )
+
     return (
       <StyledContainer>
-        <StyledFullBgImage src={images[currentIndex]} />
+        { imageMapper(images) }
       </StyledContainer>
     )
   }
 };
 
-Hero.propTypes = propTypes;
+Carousel.propTypes = propTypes;
 
-export default Hero;
+export default Carousel;

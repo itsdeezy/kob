@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components'
 import Navbar from './components/navbar';
-import Hero from './components/hero';
+import Carousel from './components/carousel';
 
 import './App.css';
 import { map } from 'lodash/fp';
@@ -39,41 +39,62 @@ const StyledShiftingHeroContainer = styled.div`
 
 class App extends Component {
   state = {
-    isTop: true
+    scrollY: 0,
+    width: 0,
+    height: 0
   }
 
   constructor(props) {
     super(props);
 
     this.handleScroll = this.handleScroll.bind(this);
+    this.handleResize = this.handleResize.bind(this);
   }
 
   componentDidMount() {
+    this.handleResize();
     window.addEventListener('scroll', this.handleScroll);
+    window.addEventListener('resize', this.handleResize);
   }
 
   componentWillUnmount() {
+    window.removeEventListener('resize', this.handleResize);
     window.removeEventListener('scroll', this.handleScroll);
   }
 
-  shouldComponentUpdate(_nextProps, { isTop }) {
-    return isTop !== this.state.isTop;
+  shouldComponentUpdate(_nextProps, { scrollY, width, height}) {
+    // TODO!
+    // Usecase for immutableJS here
+    return !(
+      scrollY === this.state.scrollY &&
+      width === this.state.width &&
+      height === this.state.height
+    );
   }
 
   handleScroll = (e) => {
-    this.setState({ isTop: window.scrollY === 0 });
+    this.setState({
+      scrollY: window.scrollY === 0
+    });
   };
 
-  render() {
-    const { isTop } = this.state;
+  handleResize() {
+    this.setState({
+      width: window.innerWidth,
+      height: window.innerHeight
+    });
+  }
 
+
+  render() {
+    const { isTop, height, _width } = this.state;
     return (
       <div className="App">
-        <StyledShiftingHeroContainer isTop={isTop}>
-          { isTop ? <HeroText>Welcome to Bhutan</HeroText> : null }
-          <Hero images={MAIN_HERO_IMAGES}/>
+        <StyledShiftingHeroContainer isTop={true}>
+          <HeroText>Welcome to Bhutan</HeroText>
+          <Carousel height={height} images={MAIN_HERO_IMAGES}/>
         </StyledShiftingHeroContainer>
-        {/* <Navbar links={MAIN_NAV_LINKS}/> */}
+        <Navbar links={MAIN_NAV_LINKS}/>
       </div>
     );
   }
