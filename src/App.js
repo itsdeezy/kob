@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
 import styled from 'styled-components'
-import Navbar from './components/navbar';
+import Blank from './components/blank';
 import Carousel from './components/carousel';
+import Canopy from './components/canopy';
+import HeroImage from './components/hero-image';
+import HeroText from './components/hero-text'
+import Navbar from './components/navbar';
 
 import './App.css';
 import { map } from 'lodash/fp';
@@ -20,26 +24,15 @@ const MAIN_HERO_IMAGES = [
   "images/main/main_hero_4.jpg"
 ]
 
-const HeroText = styled.div`
-  color: white;
-  position: relative;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 10000;
-`
+const MAIN_HERO_INTRO = "images/main/main_intro.jpg"
 
-const StyledShiftingHeroContainer = styled.div`
-  position: absolute;
-  height: ${props => props.isTop ? "100%" : "11%"};
-  width: 100%;
-
-  -webkit-transition: height 0.25s ease-out;
-  transition: height 0.25s ease-out;
+const StyledNavbar = styled(Navbar)`
+  border-top: 2px solid black;
 `
 
 class App extends Component {
   state = {
-    scrollY: 0,
+    fixed: false,
     width: 0,
     height: 0
   }
@@ -62,39 +55,39 @@ class App extends Component {
     window.removeEventListener('scroll', this.handleScroll);
   }
 
-  shouldComponentUpdate(_nextProps, { scrollY, width, height}) {
-    // TODO!
-    // Usecase for immutableJS here
+  shouldComponentUpdate(_nextProps, { fixed, width, height}) {
     return !(
-      scrollY === this.state.scrollY &&
+      fixed === this.state.fixed &&
       width === this.state.width &&
       height === this.state.height
     );
   }
 
   handleScroll = (e) => {
-    this.setState({
-      scrollY: window.scrollY === 0
-    });
+    const breakpixel = 60
+    const fixed = window.scrollY > window.innerHeight - breakpixel
+
+    this.setState({ fixed })
   };
 
-  handleResize() {
+  handleResize = () => {
     this.setState({
       width: window.innerWidth,
       height: window.innerHeight
-    });
+    })
   }
 
-
   render() {
-    const { isTop, height, _width } = this.state;
+    const { height, fixed } = this.state;
+
     return (
       <div className="App">
-        <StyledShiftingHeroContainer isTop={true}>
+        <Canopy retractedHeight={60} extendedHeight={height} retracted={fixed}>
+          <HeroImage src={MAIN_HERO_INTRO}/>
           <HeroText>Welcome to Bhutan</HeroText>
-          <Carousel height={height} images={MAIN_HERO_IMAGES}/>
-        </StyledShiftingHeroContainer>
-        <Navbar links={MAIN_NAV_LINKS}/>
+          <StyledNavbar links={MAIN_NAV_LINKS} />
+        </Canopy>
+        <Blank height={2000}/>
       </div>
     );
   }

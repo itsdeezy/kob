@@ -15,6 +15,9 @@ const StyledContainer = styled.div`
   height: ${prop => prop.height}px;
   width: 100%;
 
+  -webkit-transition: height 0.1s ease-out;
+  transition: height 0.1s ease-out;
+
   /* Slider */
   .slick-list,.slick-slider,.slick-track{position:relative;display:block}
   .slick-loading .slick-slide,.slick-loading .slick-track{visibility:hidden}
@@ -46,6 +49,9 @@ const StyledFullBgImage = styled.div`
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
+
+  -webkit-transition: height 0.1s ease-out;
+  transition: height 0.1s ease-out;
 `;
 
 const Carousel = ({ images, height }) => {
