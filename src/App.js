@@ -1,21 +1,23 @@
 import React, { Component } from 'react';
 import styled from 'styled-components'
+import {
+  Route,
+  NavLink,
+  BrowserRouter
+} from "react-router-dom";
+
+import Kingdom from './pages/kingdom';
+import Wip from './pages/wip';
+
 import Blank from './components/blank';
-import Carousel from './components/carousel';
+// import Carousel from './components/carousel';
 import Canopy from './components/canopy';
 import HeroImage from './components/hero-image';
 import HeroText from './components/hero-text'
 import Navbar from './components/navbar';
 
-import './App.css';
-import { map } from 'lodash/fp';
+// import { map } from 'lodash/fp';
 
-const MAIN_NAV_LINKS = [
-  {title: "KINGDOM", link: "/kingdom"},
-  {title: "REGIONS", link: "/not_available"},
-  {title: "VISITOR INFORMATION", link: "/not_available"},
-  {title: "TRAVEL ARRANGEMENTS", link: "/not_available"}
-]
 
 const MAIN_HERO_IMAGES = [
   "images/main/main_hero_1.jpg",
@@ -28,6 +30,10 @@ const MAIN_HERO_INTRO = "images/main/main_intro.jpg"
 
 const StyledNavbar = styled(Navbar)`
   border-top: 2px solid black;
+`
+
+const StyledContentContainer = styled.div`
+  display: block;
 `
 
 class App extends Component {
@@ -81,14 +87,25 @@ class App extends Component {
     const { height, fixed } = this.state;
 
     return (
-      <div className="App">
-        <Canopy retractedHeight={60} extendedHeight={height} retracted={fixed}>
-          <HeroImage src={MAIN_HERO_INTRO}/>
-          <HeroText>Welcome to Bhutan</HeroText>
-          <StyledNavbar links={MAIN_NAV_LINKS} />
-        </Canopy>
-        <Blank height={2000}/>
-      </div>
+      <BrowserRouter>
+        <React.Fragment>
+          <Canopy retractedHeight={60} extendedHeight={height} retracted={fixed}>
+            <HeroImage src={MAIN_HERO_INTRO}/>
+            <HeroText>Welcome to Bhutan</HeroText>
+            <StyledNavbar navlinks={[
+              <NavLink key="kingdom" to="/kingdom">KINGDOM</NavLink>,
+              <NavLink key="region" to="/wip">REGIONS</NavLink>,
+              <NavLink key="visinfo" to="/wip">VISITOR INFORMATION</NavLink>,
+              <NavLink key="travarr" to="/wip">TRAVEL ARRANGEMENTS</NavLink>,
+            ]} />
+          </Canopy>
+          <StyledContentContainer>
+            <Route exact path="/" component={Kingdom}/>
+            <Route path="/kingdom" component={Kingdom}/>
+            <Route path="/wip" component={Wip}/>
+          </StyledContentContainer>
+        </React.Fragment>
+      </BrowserRouter>
     );
   }
 }

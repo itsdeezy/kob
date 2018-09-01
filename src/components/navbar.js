@@ -5,6 +5,7 @@ import { map } from 'lodash/fp';
 const StyledUl = styled.ul`
   margin: 0;
   padding: 10px 0;
+  background: white;
 
   li {
     vertical-align: top;
@@ -14,17 +15,14 @@ const StyledUl = styled.ul`
   }
 `
 
-const Navbar = ({className, links}) => {
+const Navbar = ({className, navlinks}) => {
   const navLinkMapper = map(
-    ({title, link}) =>
-      <li key={`${title}-${link}`}>
-        <a href={link}>{title}</a>
-      </li>
+    navlink => <li key={`${navlink.key}`}>{ navlink }</li>
   )
 
   return (
     <StyledUl className={className}>
-      { navLinkMapper(links) }
+      { navLinkMapper(navlinks) }
     </StyledUl>
   );
 }
