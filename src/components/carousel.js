@@ -54,28 +54,39 @@ const StyledFullBgImage = styled.div`
   transition: height 0.1s ease-out;
 `;
 
-const Carousel = ({ images, height }) => {
-  const settings = {
-    autoplay: true,
-    arrows: false,
-    dots: false,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1
-  };
+class Carousel extends Component {
 
-  const imageMapper = map(
-    image => <StyledFullBgImage height={height} key={image} src={image} />
-  )
+  componentDidUpdate(_prevProps, _prevState) {
+    if (this.props.playing)
+      this.slider.slickPlay()
+    else
+      this.slider.slickPause()
+  }
 
-  return (
-    <StyledContainer height={height}>
-      <Slider {...settings}  >
-        { imageMapper(images) }
-      </Slider>
-    </StyledContainer>
-  )
+  render() {
+    const { images, height } = this.props
+    const imageMapper = map(
+      image => <StyledFullBgImage height={height} key={image} src={image} />
+    )
+    const settings = {
+      autoplay: true,
+      arrows: false,
+      dots: false,
+      infinite: true,
+      autoplaySpeed: 4000,
+      speed: 750,
+      slidesToShow: 1,
+      slidesToScroll: 1
+    };
+
+    return (
+      <StyledContainer height={height}>
+        <Slider ref={slider => this.slider = slider} {...settings}>
+          { imageMapper(images) }
+        </Slider>
+      </StyledContainer>
+    )
+  }
 }
 
 Carousel.propTypes = propTypes;

@@ -10,5 +10,5 @@ const Thing = styled.div`
 export default () =>
   <React.Fragment>
     <Blank height={58}/>
-    { times(() => <Thing>Hi</Thing>)(20) }
+    { times(() => <Thing>Hi</Thing>)(40) }
   </React.Fragment>

@@ -9,27 +9,19 @@ import {
 import Kingdom from './pages/kingdom';
 import Wip from './pages/wip';
 
-import Blank from './components/blank';
-// import Carousel from './components/carousel';
+import Carousel from './components/carousel';
 import Canopy from './components/canopy';
-import HeroImage from './components/hero-image';
 import HeroText from './components/hero-text'
 import Navbar from './components/navbar';
 
-// import { map } from 'lodash/fp';
-
-
-const MAIN_HERO_IMAGES = [
-  "images/main/main_hero_1.jpg",
-  "images/main/main_hero_2.jpg",
-  "images/main/main_hero_3.jpg",
-  "images/main/main_hero_4.jpg"
-]
-
-const MAIN_HERO_INTRO = "images/main/main_intro.jpg"
+import { MAIN_HERO_IMAGES } from './constants';
 
 const StyledNavbar = styled(Navbar)`
   border-top: 2px solid black;
+  position: absolute;
+  bottom: -58px;
+  width: 100%;
+  display: block;
 `
 
 const StyledContentContainer = styled.div`
@@ -43,17 +35,45 @@ class App extends Component {
     height: 0
   }
 
+  handleScroll = () => {
+    const breakpixel = 60
+    const fixed = window.scrollY > window.innerHeight - breakpixel
+    this.setState({ fixed })
+  };
+
+  handleResizeEnd = () => {
+    this.setState({
+      width: window.innerWidth,
+      height: window.innerHeight
+    })
+  }
+
   constructor(props) {
     super(props);
 
+    this.throttledResize = this.throttledResize.bind(this)
     this.handleScroll = this.handleScroll.bind(this);
-    this.handleResize = this.handleResize.bind(this);
+    this.handleResizeEnd = this.handleResizeEnd.bind(this);
+  }
+
+  // NOTE!
+  // This is a hacked closure. Make sure its only called in
+  // componentDidMount, otherwise beware of memory leaks
+  throttledResize() {
+    let resizeTimer = 0;
+    const resizeClosure = (() => {
+      clearTimeout(resizeTimer)
+      resizeTimer = setTimeout(this.handleResizeEnd, 250);
+    }).bind(this)
+
+    window.addEventListener('resize', resizeClosure);
+    return resizeClosure
   }
 
   componentDidMount() {
-    this.handleResize();
+    this.handleResizeEnd();
     window.addEventListener('scroll', this.handleScroll);
-    window.addEventListener('resize', this.handleResize);
+    this.handleResize = this.throttledResize();
   }
 
   componentWillUnmount() {
@@ -69,20 +89,6 @@ class App extends Component {
     );
   }
 
-  handleScroll = (e) => {
-    const breakpixel = 60
-    const fixed = window.scrollY > window.innerHeight - breakpixel
-
-    this.setState({ fixed })
-  };
-
-  handleResize = () => {
-    this.setState({
-      width: window.innerWidth,
-      height: window.innerHeight
-    })
-  }
-
   render() {
     const { height, fixed } = this.state;
 
@@ -90,7 +96,11 @@ class App extends Component {
       <BrowserRouter>
         <React.Fragment>
           <Canopy retractedHeight={60} extendedHeight={height} retracted={fixed}>
-            <HeroImage src={MAIN_HERO_INTRO}/>
+            <Carousel
+              images={MAIN_HERO_IMAGES}
+              height={height}
+              playing={!fixed}
+            />
             <HeroText>Welcome to Bhutan</HeroText>
             <StyledNavbar navlinks={[
               <NavLink key="kingdom" to="/kingdom">KINGDOM</NavLink>,
